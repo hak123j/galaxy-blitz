@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>Galaxy Blitz - Space Shooter</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background: #0a0a14;
+      overflow: hidden;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    }
+    #unity-container {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+    }
+    #unity-canvas {
+      width: 100%;
+      height: 100%;
+      background: #0a0a14;
+    }
+    #loading-cover {
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      background: linear-gradient(135deg, #0a0a14 0%, #1a1a2e 100%);
+      z-index: 10;
+      transition: opacity 0.5s;
+    }
+    .loading-title {
+      color: #4dd0e1;
+      font-size: 48px;
+      font-weight: 900;
+      letter-spacing: 8px;
+      margin-bottom: 8px;
+      text-shadow: 0 0 20px rgba(77, 208, 225, 0.5);
+    }
+    .loading-subtitle {
+      color: #ffd54f;
+      font-size: 16px;
+      letter-spacing: 6px;
+      margin-bottom: 40px;
+    }
+    .progress-bar {
+      width: 300px;
+      height: 4px;
+      background: rgba(255,255,255,0.1);
+      border-radius: 2px;
+      overflow: hidden;
+      margin-bottom: 12px;
+    }
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #4dd0e1, #ffd54f);
+      border-radius: 2px;
+      width: 0%;
+      transition: width 0.3s;
+    }
+    .progress-text {
+      color: rgba(255,255,255,0.4);
+      font-size: 12px;
+    }
+    .hidden { opacity: 0; pointer-events: none; }
+  </style>
+</head>
+<body>
+  <div id="unity-container">
+    <canvas id="unity-canvas" tabindex="-1"></canvas>
+    <div id="loading-cover">
+      <div class="loading-title">GALAXY BLITZ</div>
+      <div class="loading-subtitle">SPACE SHOOTER</div>
+      <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
+      <div class="progress-text" id="progress-text">Loading...</div>
+    </div>
+  </div>
+
+  <script src="Build/WebGL.loader.js"></script>
+  <script>
+    const container = document.getElementById("unity-container");
+    const canvas = document.getElementById("unity-canvas");
+    const loadingCover = document.getElementById("loading-cover");
+    const progressFill = document.getElementById("progress-fill");
+    const progressText = document.getElementById("progress-text");
+
+    createUnityInstance(canvas, {
+      dataUrl: "Build/WebGL.data",
+      frameworkUrl: "Build/WebGL.framework.js",
+      codeUrl: "Build/WebGL.wasm",
+      streamingAssetsUrl: "StreamingAssets",
+      companyName: "GalaxyBlitz",
+      productName: "Galaxy Blitz",
+      productVersion: "1.0.0",
+    }, (progress) => {
+      const pct = Math.round(progress * 100);
+      progressFill.style.width = pct + "%";
+      progressText.textContent = pct + "%";
+    }).then((instance) => {
+      loadingCover.classList.add("hidden");
+      canvas.focus();
+    }).catch((err) => {
+      progressText.textContent = "Error: " + err.message;
+    });
+  </script>
+</body>
+</html>
